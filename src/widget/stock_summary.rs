@@ -43,7 +43,18 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                 profile.price.short_name.as_str(),
                 profile.price.currency.as_deref().unwrap_or("USD"),
             ),
-            None => ("", ""),
+            None => ("", "USD"),
+        };
+
+        let currency_symbol = match currency {
+            "USD" => "$",
+            "EUR" => "€",
+            "GBP" => "£",
+            "JPY" | "CNY" => "¥",
+            "KRW" => "₩",
+            "INR" => "₹",
+            "BTC" => "₿",
+            _ => currency,
         };
 
         let loading_indicator = ".".repeat(state.loading_tick);
@@ -107,7 +118,7 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                     Span::styled("C: ", style().fg(THEME.text_normal())),
                     Span::styled(
                         if loaded {
-                            format!("{} {}", current_fmt, currency)
+                            format!("{}{}", currency_symbol, current_fmt)
                         } else {
                             "".to_string()
                         },
@@ -119,7 +130,11 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                 Line::from(vec![
                     Span::styled("H: ", style().fg(THEME.text_normal())),
                     Span::styled(
-                        if loaded { high_fmt } else { "".to_string() },
+                        if loaded {
+                            format!("{}{}", currency_symbol, high_fmt)
+                        } else {
+                            "".to_string()
+                        },
                         style().fg(THEME.text_secondary()),
                     ),
                     Span::styled(
@@ -140,7 +155,11 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                 Line::from(vec![
                     Span::styled("L: ", style().fg(THEME.text_normal())),
                     Span::styled(
-                        if loaded { low_fmt } else { "".to_string() },
+                        if loaded {
+                            format!("{}{}", currency_symbol, low_fmt)
+                        } else {
+                            "".to_string()
+                        },
                         style().fg(THEME.text_secondary()),
                     ),
                     Span::styled(
