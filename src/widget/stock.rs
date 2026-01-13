@@ -443,7 +443,7 @@ impl StockState {
         }
     }
 
-    pub fn x_labels(&self, width: u16, start: i64, end: i64, data: &[Price]) -> Vec<Span> {
+    pub fn x_labels(&self, width: u16, start: i64, end: i64, data: &[Price]) -> Vec<Span<'_>> {
         let mut labels = vec![];
 
         let dates = if self.time_frame == TimeFrame::Day1 {
@@ -487,7 +487,7 @@ impl StockState {
         [(min), (max)]
     }
 
-    pub fn y_labels(&self, min: f64, max: f64) -> Vec<Span> {
+    pub fn y_labels(&self, min: f64, max: f64) -> Vec<Span<'_>> {
         if self.loaded() {
             vec![
                 Span::styled(
@@ -837,7 +837,7 @@ impl CachableWidget<StockState> for StockWidget {
                     Line::from(vec![
                         Span::styled("P/L: ", style()),
                         Span::styled(
-                            format!("{}", format_decimals(profit_loss)),
+                            format_decimals(profit_loss).to_string(),
                             style().add_modifier(Modifier::BOLD).fg(profit_loss_color),
                         ),
                         Span::styled(
