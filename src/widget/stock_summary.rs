@@ -7,7 +7,7 @@ use ratatui::widgets::{Block, Borders, Paragraph, StatefulWidget, Widget};
 use super::chart::{PricesCandlestickChart, PricesKagiChart, PricesLineChart, VolumeBarChart};
 use super::stock::StockState;
 use super::{CachableWidget, CacheState};
-use crate::common::{format_decimals, ChartType};
+use crate::common::{format_decimals, ChartType, TimeFrame};
 use crate::draw::{add_padding, PaddingDirection};
 use crate::theme::style;
 use crate::{ENABLE_PRE_POST, SHOW_VOLUMES, THEME};
@@ -90,6 +90,16 @@ impl CachableWidget<StockState> for StockSummaryWidget {
             let high_fmt = format_decimals(high);
             let low_fmt = format_decimals(low);
 
+            let (high_pct, low_pct) = if state.time_frame == TimeFrame::Day1 {
+                if let Some(prev_close) = state.prev_close_price {
+                    (Some(high / prev_close - 1.0), Some(low / prev_close - 1.0))
+                } else {
+                    (None, None)
+                }
+            } else {
+                (None, None)
+            };
+
             let vol = state.reg_mkt_volume.clone().unwrap_or_default();
 
             let prices = vec![
@@ -112,12 +122,40 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                         if loaded { high_fmt } else { "".to_string() },
                         style().fg(THEME.text_secondary()),
                     ),
+                    Span::styled(
+                        if loaded {
+                            high_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                        } else {
+                            "".to_string()
+                        },
+                        style()
+                            .add_modifier(Modifier::BOLD)
+                            .fg(if high_pct.unwrap_or(0.0) >= 0.0 {
+                                THEME.profit()
+                            } else {
+                                THEME.loss()
+                            }),
+                    ),
                 ]),
                 Line::from(vec![
                     Span::styled("L: ", style().fg(THEME.text_normal())),
                     Span::styled(
                         if loaded { low_fmt } else { "".to_string() },
                         style().fg(THEME.text_secondary()),
+                    ),
+                    Span::styled(
+                        if loaded {
+                            low_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                        } else {
+                            "".to_string()
+                        },
+                        style()
+                            .add_modifier(Modifier::BOLD)
+                            .fg(if low_pct.unwrap_or(0.0) >= 0.0 {
+                                THEME.profit()
+                            } else {
+                                THEME.loss()
+                            }),
                     ),
                 ]),
                 Line::default(),

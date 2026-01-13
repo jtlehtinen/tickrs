@@ -688,6 +688,16 @@ impl CachableWidget<StockState> for StockWidget {
             let high_fmt = format_decimals(high);
             let low_fmt = format_decimals(low);
 
+            let (high_pct, low_pct) = if state.time_frame == TimeFrame::Day1 {
+                if let Some(prev_close) = state.prev_close_price {
+                    (Some(high / prev_close - 1.0), Some(low / prev_close - 1.0))
+                } else {
+                    (None, None)
+                }
+            } else {
+                (None, None)
+            };
+
             let vol = state.reg_mkt_volume.clone().unwrap_or_default();
 
             let company_info = vec![
@@ -724,12 +734,40 @@ impl CachableWidget<StockState> for StockWidget {
                         if loaded { high_fmt } else { "".to_string() },
                         style().fg(THEME.text_secondary()),
                     ),
+                    Span::styled(
+                        if loaded {
+                            high_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                        } else {
+                            "".to_string()
+                        },
+                        style()
+                            .add_modifier(Modifier::BOLD)
+                            .fg(if high_pct.unwrap_or(0.0) >= 0.0 {
+                                THEME.profit()
+                            } else {
+                                THEME.loss()
+                            }),
+                    ),
                 ]),
                 Line::from(vec![
                     Span::styled("L: ", style()),
                     Span::styled(
                         if loaded { low_fmt } else { "".to_string() },
                         style().fg(THEME.text_secondary()),
+                    ),
+                    Span::styled(
+                        if loaded {
+                            low_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                        } else {
+                            "".to_string()
+                        },
+                        style()
+                            .add_modifier(Modifier::BOLD)
+                            .fg(if low_pct.unwrap_or(0.0) >= 0.0 {
+                                THEME.profit()
+                            } else {
+                                THEME.loss()
+                            }),
                     ),
                 ]),
                 Line::default(),
