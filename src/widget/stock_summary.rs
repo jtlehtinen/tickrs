@@ -139,7 +139,7 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                     ),
                     Span::styled(
                         if loaded {
-                            high_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                            high_pct.map_or("".to_string(), |p| format!("{:>9}", format!("{:.2}%", p * 100.0)))
                         } else {
                             "".to_string()
                         },
@@ -164,7 +164,7 @@ impl CachableWidget<StockState> for StockSummaryWidget {
                     ),
                     Span::styled(
                         if loaded {
-                            low_pct.map_or("".to_string(), |p| format!("  {:.2}%", p * 100.0))
+                            low_pct.map_or("".to_string(), |p| format!("{:>9}", format!("{:.2}%", p * 100.0)))
                         } else {
                             "".to_string()
                         },
@@ -189,7 +189,7 @@ impl CachableWidget<StockState> for StockSummaryWidget {
 
             let pct = vec![Span::styled(
                 if loaded {
-                    format!("  {:.2}%", pct_change * 100.0)
+                    format!("{:>9}", format!("{:.2}%", pct_change * 100.0))
                 } else {
                     "".to_string()
                 },
