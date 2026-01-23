@@ -648,7 +648,7 @@ impl CachableWidget<StockState> for StockWidget {
         let mut chunks: Vec<Rect> = Layout::default()
             .constraints(
                 [
-                    Constraint::Length(6),
+                    Constraint::Length(8),
                     Constraint::Min(0),
                     Constraint::Length(2),
                 ]
@@ -710,6 +710,23 @@ impl CachableWidget<StockState> for StockWidget {
             };
 
             let vol = state.reg_mkt_volume.clone().unwrap_or_default();
+
+            let (market_cap, avg_volume) = match state.profile.as_ref() {
+                Some(profile) => {
+                    let mc = profile
+                        .summary_detail
+                        .as_ref()
+                        .and_then(|sd| sd.market_cap.as_ref())
+                        .and_then(|mc| mc.fmt.clone());
+                    let av = profile
+                        .summary_detail
+                        .as_ref()
+                        .and_then(|sd| sd.average_volume.as_ref())
+                        .and_then(|av| av.fmt.clone());
+                    (mc, av)
+                }
+                None => (None, None),
+            };
 
             let company_info = vec![
                 Line::from(vec![
@@ -794,6 +811,28 @@ impl CachableWidget<StockState> for StockWidget {
                     Span::styled("Volume: ", style()),
                     Span::styled(
                         if loaded { vol } else { "".to_string() },
+                        style().fg(THEME.text_secondary()),
+                    ),
+                ]),
+                Line::from(vec![
+                    Span::styled("Mkt Cap: ", style()),
+                    Span::styled(
+                        if loaded {
+                            market_cap.unwrap_or_default()
+                        } else {
+                            "".to_string()
+                        },
+                        style().fg(THEME.text_secondary()),
+                    ),
+                ]),
+                Line::from(vec![
+                    Span::styled("Avg Vol: ", style()),
+                    Span::styled(
+                        if loaded {
+                            avg_volume.unwrap_or_default()
+                        } else {
+                            "".to_string()
+                        },
                         style().fg(THEME.text_secondary()),
                     ),
                 ]),

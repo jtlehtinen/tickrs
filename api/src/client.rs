@@ -107,7 +107,7 @@ impl Client {
         crumb_data: CrumbData,
     ) -> Result<CompanyData> {
         let mut params = HashMap::new();
-        params.insert("modules", "price,assetProfile".to_string());
+        params.insert("modules", "price,assetProfile,summaryDetail".to_string());
         params.insert("crumb", crumb_data.crumb);
 
         let url = self.get_url(

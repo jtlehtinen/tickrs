@@ -121,6 +121,16 @@ pub struct CompanyData {
     #[serde(rename = "assetProfile")]
     pub profile: Option<CompanyProfile>,
     pub price: CompanyPrice,
+    #[serde(rename = "summaryDetail")]
+    pub summary_detail: Option<SummaryDetail>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SummaryDetail {
+    pub market_cap: Option<OptionalCompanyMarketPrice>,
+    #[serde(rename = "averageVolume")]
+    pub average_volume: Option<OptionalCompanyMarketPrice>,
 }
 
 #[derive(Debug, Deserialize, Clone, Hash)]
