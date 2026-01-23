@@ -815,10 +815,10 @@ impl CachableWidget<StockState> for StockWidget {
                     ),
                 ]),
                 Line::from(vec![
-                    Span::styled("Mkt Cap: ", style()),
+                    Span::styled("Avg Vol: ", style()),
                     Span::styled(
                         if loaded {
-                            market_cap.unwrap_or_default()
+                            avg_volume.unwrap_or_default()
                         } else {
                             "".to_string()
                         },
@@ -826,10 +826,10 @@ impl CachableWidget<StockState> for StockWidget {
                     ),
                 ]),
                 Line::from(vec![
-                    Span::styled("Avg Vol: ", style()),
+                    Span::styled("Mkt Cap: ", style()),
                     Span::styled(
                         if loaded {
-                            avg_volume.unwrap_or_default()
+                            market_cap.unwrap_or_default()
                         } else {
                             "".to_string()
                         },
