@@ -211,7 +211,10 @@ impl Client {
 
         let request = Request::builder()
             .uri(self.get_url(Version::V1, "test/getcrumb", None)?)
-            .header(header::USER_AGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+            .header(
+                header::USER_AGENT,
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0",
+            )
             .header(header::COOKIE, cookie)
             .method(http::Method::GET)
             .body(())?;
