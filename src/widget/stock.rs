@@ -536,6 +536,30 @@ impl StockState {
         self.current_price() / baseline - 1.0
     }
 
+    pub fn dollar_change(&self, data: &[Price]) -> f64 {
+        if data.iter().filter(|p| p.close > 0.0).count() == 0 {
+            return 0.0;
+        }
+
+        let baseline = if self.time_frame == TimeFrame::Day1 {
+            if let Some(prev_close) = self.prev_close_price {
+                prev_close
+            } else {
+                data.iter()
+                    .find(|p| p.close > 0.0)
+                    .map(|d| d.close)
+                    .unwrap()
+            }
+        } else {
+            data.iter()
+                .find(|p| p.close > 0.0)
+                .map(|d| d.close)
+                .unwrap()
+        };
+
+        self.current_price() - baseline
+    }
+
     pub fn loaded(&self) -> bool {
         !self.prices[self.time_frame.idx()].is_empty() && self.current_price() > 0.0
     }
@@ -594,6 +618,7 @@ impl CachableWidget<StockState> for StockWidget {
         let data = state.prices().collect::<Vec<_>>();
 
         let pct_change = state.pct_change(&data);
+        let dollar_change = state.dollar_change(&data);
 
         let chart_type = state.chart_type;
         let show_x_labels = *SHOW_X_LABELS.read();
@@ -743,7 +768,12 @@ impl CachableWidget<StockState> for StockWidget {
                     ),
                     Span::styled(
                         if loaded {
-                            format!("{:>9}", format!("{:.2}%", pct_change * 100.0))
+                            format!(
+                                "{:>8.2}% ({}{})",
+                                pct_change * 100.0,
+                                if dollar_change >= 0.0 { "+" } else { "" },
+                                format_decimals(dollar_change),
+                            )
                         } else {
                             "".to_string()
                         },
@@ -768,17 +798,19 @@ impl CachableWidget<StockState> for StockWidget {
                     ),
                     Span::styled(
                         if loaded {
-                            high_pct.map_or("".to_string(), |p| format!("{:>9}", format!("{:.2}%", p * 100.0)))
+                            high_pct.map_or("".to_string(), |p| {
+                                format!("{:>9}", format!("{:.2}%", p * 100.0))
+                            })
                         } else {
                             "".to_string()
                         },
-                        style()
-                            .add_modifier(Modifier::BOLD)
-                            .fg(if high_pct.unwrap_or(0.0) >= 0.0 {
+                        style().add_modifier(Modifier::BOLD).fg(
+                            if high_pct.unwrap_or(0.0) >= 0.0 {
                                 THEME.profit()
                             } else {
                                 THEME.loss()
-                            }),
+                            },
+                        ),
                     ),
                 ]),
                 Line::from(vec![
@@ -793,7 +825,9 @@ impl CachableWidget<StockState> for StockWidget {
                     ),
                     Span::styled(
                         if loaded {
-                            low_pct.map_or("".to_string(), |p| format!("{:>9}", format!("{:.2}%", p * 100.0)))
+                            low_pct.map_or("".to_string(), |p| {
+                                format!("{:>9}", format!("{:.2}%", p * 100.0))
+                            })
                         } else {
                             "".to_string()
                         },
