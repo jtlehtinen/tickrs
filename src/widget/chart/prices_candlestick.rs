@@ -24,6 +24,7 @@ pub struct PricesCandlestickChart<'a> {
     pub data: &'a [Price],
     pub is_summary: bool,
     pub show_x_labels: bool,
+    pub show_y_labels: bool,
 }
 
 impl StatefulWidget for PricesCandlestickChart<'_> {
@@ -116,7 +117,7 @@ impl StatefulWidget for PricesCandlestickChart<'_> {
         }
 
         // Draw y labels
-        if self.loaded {
+        if self.loaded && self.show_y_labels {
             let y_area = layout[0];
 
             let labels = state.y_labels(min, max);

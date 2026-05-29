@@ -245,6 +245,7 @@ pub struct PricesKagiChart<'a> {
     pub data: &'a [Price],
     pub is_summary: bool,
     pub show_x_labels: bool,
+    pub show_y_labels: bool,
     pub kagi_options: KagiOptions,
 }
 
@@ -437,7 +438,7 @@ impl StatefulWidget for PricesKagiChart<'_> {
         }
 
         // Draw y labels
-        if self.loaded {
+        if self.loaded && self.show_y_labels {
             let y_area = layout[0];
 
             let labels = state.y_labels(min, max);

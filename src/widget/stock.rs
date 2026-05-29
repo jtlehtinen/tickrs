@@ -1018,6 +1018,7 @@ impl CachableWidget<StockState> for StockWidget {
                     is_summary: false,
                     loaded,
                     show_x_labels,
+                    show_y_labels: true,
                 }
                 .render(graph_chunks[0], buf, state);
             }
@@ -1026,6 +1027,7 @@ impl CachableWidget<StockState> for StockWidget {
                     data: &data,
                     loaded,
                     show_x_labels,
+                    show_y_labels: true,
                     is_summary: false,
                 }
                 .render(graph_chunks[0], buf, state);
@@ -1035,6 +1037,7 @@ impl CachableWidget<StockState> for StockWidget {
                     data: &data,
                     loaded,
                     show_x_labels,
+                    show_y_labels: true,
                     is_summary: false,
                     kagi_options: state.chart_configuration.kagi_options.clone(),
                 }

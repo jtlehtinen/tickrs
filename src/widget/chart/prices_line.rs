@@ -16,6 +16,7 @@ pub struct PricesLineChart<'a> {
     pub loaded: bool,
     pub enable_pre_post: bool,
     pub show_x_labels: bool,
+    pub show_y_labels: bool,
     pub is_profit: bool,
     pub is_summary: bool,
     pub data: &'a [Price],
@@ -273,7 +274,7 @@ impl StatefulWidget for PricesLineChart<'_> {
         }
 
         // Draw y labels
-        if self.loaded {
+        if self.loaded && self.show_y_labels {
             let y_area = layout[0];
 
             let labels = state.y_labels(min, max);
